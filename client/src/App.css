@@ -1,0 +1,65 @@
+:root {
+  --gradientFrom: #2563eb;
+  --gradientTo: #10b981;
+  --lightBackground: #f0f4ff;
+  --cardBackground: #ffffff;
+  --highlight: #3b82f6;
+}
+
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: var(--highlight);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+button {
+  transition: all 0.3s ease-in-out;
+}
+
+button:hover {
+  transform: scale(1.05);
+}
+
+input,
+select {
+  transition: border 0.3s ease-in-out;
+}
+
+input:focus,
+select:focus {
+  border-color: var(--gradientTo);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.4);
+}
