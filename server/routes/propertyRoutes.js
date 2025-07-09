@@ -4,12 +4,12 @@ import Property from '../models/Property.js';
 
 const router = express.Router();
 
+/* ─────────────── SEARCH ─────────────── */
 // GET /api/properties/search
 router.get('/search', async (req, res) => {
   try {
     const { city, area, type } = req.query;
     const query = {};
-
     if (city) query.city = city;
     if (area) query.area = area;
     if (type) query.type = type;
@@ -22,10 +22,27 @@ router.get('/search', async (req, res) => {
   }
 });
 
+/* ─────────────── OWNER COUNT ─────────────── */
+// GET /api/properties/owner/count
+// (⚠️  must be defined before '/:id')
+router.get('/owner/count', authMiddleware, async (req, res) => {
+  try {
+    if (req.user.role !== 'owner') {
+      return res.status(403).json({ message: 'Access denied' });
+    }
+    const count = await Property.countDocuments({ 'owner.email': req.user.email });
+    res.json({ count });
+  } catch (err) {
+    console.error('❌ Error fetching owner property count:', err);
+    res.status(500).json({ message: 'Failed to fetch property count' });
+  }
+});
+
+/* ─────────────── LIST WITH LIMIT ─────────────── */
 // GET /api/properties?limit=3
 router.get('/', async (req, res) => {
   try {
-    const limit = parseInt(req.query.limit) || 0;
+    const limit = Math.max(0, parseInt(req.query.limit) || 0); // never negative
     const properties = await Property.find().limit(limit);
     res.json(properties);
   } catch (err) {
@@ -34,7 +51,8 @@ router.get('/', async (req, res) => {
   }
 });
 
-//  NEW: GET /api/properties/:id (for Property Details Page)
+/* ─────────────── GET BY ID ─────────────── */
+// GET /api/properties/:id
 router.get('/:id', async (req, res) => {
   try {
     const property = await Property.findById(req.params.id);
@@ -47,16 +65,5 @@ router.get('/:id', async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch property details' });
   }
 });
-
-// Count properties by owner
-router.get('/owner/count', authMiddleware, async (req, res) => {
-    try {
-      if (req.user.role !== 'owner') return res.status(403).json({ message: 'Access denied' });
-      const count = await Property.countDocuments({ 'owner.email': req.user.email });
-      res.json({ count });
-    } catch (err) {
-      res.status(500).json({ message: 'Failed to fetch property count' });
-    }
-  });
 
 export default router;
